@@ -1,4 +1,7 @@
-﻿namespace OnlineShop.Models.Db;
+﻿using System;
+using System.Collections.Generic;
+
+namespace OnlineShop.Models.Db;
 
 public partial class Menu
 {
