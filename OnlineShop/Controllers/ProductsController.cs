@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineShop.Models.Db;
+using System.Text.RegularExpressions;
 
 namespace OnlineShop.Controllers;
 public class ProductsController : Controller
@@ -32,6 +33,43 @@ public class ProductsController : Controller
             return NotFound();
         }
         ViewData["gallery"] = _context.ProductGalleries.Where(x => x.ProductId == id).ToList();
+        ViewData["NewProducts"] = _context.Products.Where(x => x.Id != id).Take(4).OrderByDescending(x => x.Id).ToList();
+        ViewData["comments"] = _context.Comments.Where(x => x.ProductId == id).OrderByDescending(x => x.CreateDate).ToList();
         return View(product);
     }
+
+    [HttpPost]
+    public IActionResult SubmitComment(string name, string email, string comment, int productId)
+    {
+        if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(email) && !string.IsNullOrEmpty(comment) && productId != 0)
+        {
+            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+            Match match = regex.Match(email);
+            if (!match.Success)
+            {
+                TempData["ErrorMessage"] = "Email is not valid";
+                return Redirect("/Products/ProductDetails/" + productId);
+            }
+
+            Comment newComment = new Comment();
+            newComment.Name = name;
+            newComment.Email = email;
+            newComment.CommentText = comment;
+            newComment.ProductId = productId;
+            newComment.CreateDate = DateTime.Now;
+
+            _context.Comments.Add(newComment);
+            _context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Youre comment submited successfully";
+            return Redirect("/Products/ProductDetails/" + productId);
+        }
+        else
+        {
+            TempData["ErrorMessage"] = "Please complete youre information";
+            return Redirect("/Products/ProductDetails/" + productId);
+        }
+
+    }
+
 }
