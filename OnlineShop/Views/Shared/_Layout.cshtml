@@ -187,11 +187,21 @@
                             <div class="header_account">
                                 <ul class="d-flex">
                                     <li class="header_search"><a href="#"><i class="icon-magnifier icons"></i></a></li>
-                                    <li class="account_link"><a href="#"><i class="icon-user icons"></i></a>
+                                    <li class="account_link"><a href="#"><i class="icon-user icons @(User.Identity.IsAuthenticated?"text-danger":"")"></i></a>
                                         <ul class="dropdown_account_link">
-                                            <li><a href="#">My Account</a></li>
-                                            <li><a href="#">Login</a></li>
-                                            <li><a href="#">Contact</a></li>
+                                            @if (User.Identity.IsAuthenticated)
+                                            {
+                                                <li><a href="#">My Account</a></li>
+                                                <li><a href="#">Order List</a></li>
+                                                <li><a href="/account/logout">Logout</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li><a href="/account/login">Login</a></li>
+                                                <li><a href="/account/register">Register</a></li>
+                                                
+                                            }
+
                                         </ul>
                                     </li>
                                     <li><a href="#"><i class="icon-heart icons"></i></a> <span
@@ -310,7 +320,42 @@
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
 
+    <script>
+        function updateCart(productId, count) {
+            $.ajax({
+                url: '/Cart/UpdateCart',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ productId: productId, count: count }),
+                success: function (result) {
+                    $(".item_count").html(result);
+                    getMiniCart();
+                },
+                error: function () {
+                    alert('Error product not found');
+                }
+            });
+        }
 
+        function getMiniCart() {
+            $.ajax({
+                url: '/Cart/SmallCart',
+                type: 'GET',
+                success: function (result) {
+                    $(".mini_cart").html(result);
+                },
+                error: function () {
+                    console.error('Error fetching mini cart');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+
+            getMiniCart();
+        });
+
+    </script>
 
 </body>
 
