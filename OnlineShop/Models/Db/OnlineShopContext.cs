@@ -17,6 +17,10 @@ public partial class OnlineShopContext : DbContext
 
     public virtual DbSet<Banner> Banners { get; set; }
 
+    public virtual DbSet<BestSellingFinal> BestSellingFinals { get; set; }
+
+    public virtual DbSet<BestSellingTemp> BestSellingTemps { get; set; }
+
     public virtual DbSet<Comment> Comments { get; set; }
 
     public virtual DbSet<Coupon> Coupons { get; set; }
@@ -50,6 +54,32 @@ public partial class OnlineShopContext : DbContext
             entity.Property(e => e.Link).HasMaxLength(100);
             entity.Property(e => e.Position).HasMaxLength(50);
             entity.Property(e => e.SubTitle).HasMaxLength(1000);
+            entity.Property(e => e.Title).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<BestSellingFinal>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("BestSellingFinal");
+
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Title).HasMaxLength(200);
+        });
+
+        modelBuilder.Entity<BestSellingTemp>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("BestSellingTemp");
+
+            entity.Property(e => e.Discount).HasColumnType("money");
+            entity.Property(e => e.ImageName).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.Status).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(200);
         });
 
