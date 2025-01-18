@@ -2,13 +2,13 @@
 
 @{
     ViewData["Title"] = "Details";
+    List<OrderDetail> orderDetails = ViewData["OrderDetails"] as List<OrderDetail>;
 }
 
-<h1>Details</h1>
 
-<div>
-    <h4>Order</h4>
-    <hr />
+
+<div class="container" style="margin:200px;">
+    
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UserId)
@@ -119,8 +119,46 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
+
+    <table class="table table-responsive">
+        <thead>
+            <tr>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Price
+                </th>
+                <th>
+                    Count
+                </th>
+                <th>
+                    Total
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in orderDetails)
+            {
+                <tr>
+                    <td>
+                        @item.ProductTitle
+                    </td>
+                    <td>
+                        @item.ProductPrice
+                    </td>
+                    <td>
+                        @item.Count
+                    </td>
+                    <td>
+                        @(item.Count * item.ProductPrice)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

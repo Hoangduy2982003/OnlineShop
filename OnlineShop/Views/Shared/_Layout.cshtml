@@ -138,8 +138,8 @@
                                         <ul class="dropdown_account_link">
                                             @if (User.Identity.IsAuthenticated)
                                             {
-                                                <li><a href="#">My Account</a></li>
-                                                <li><a href="#">Order List</a></li>
+                                                <li><a href="/User">My Account</a></li>
+                                                <li><a href="/User/Orders">Order List</a></li>
                                                 <li><a href="/account/logout">Logout</a></li>
                                             }
                                             else
