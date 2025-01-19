@@ -4,7 +4,6 @@
     ViewData["Title"] = "Login";
 }
 
-<hr />
 <div class="row" style="margin-top:150px">
     <div class="col-md-4 mx-auto">
         <form asp-action="Login">
@@ -26,6 +25,17 @@
             <div class="form-group">
                 <input type="submit" value="Login" class="btn btn-outline-dark" />
             </div>
+
+            <p class="mt-2 mb-0">
+                <a asp-controller="Account" asp-action="Register" class="text-black-50">
+                    Don`t have any account? Create new
+                </a>
+            </p>
+            <p>
+                <a asp-controller="Account" asp-action="RecoveryPassword" class="text-black-50">
+                    Forgot your password? click here
+                </a>
+            </p>
         </form>
     </div>
 </div>

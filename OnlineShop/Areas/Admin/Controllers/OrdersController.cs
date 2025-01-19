@@ -7,22 +7,22 @@ namespace OnlineShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize(Roles = "admin")]
-    public class MenusController : Controller
+    public class OrdersController : Controller
     {
         private readonly OnlineShopContext _context;
 
-        public MenusController(OnlineShopContext context)
+        public OrdersController(OnlineShopContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/Menus
+        // GET: Admin/Orders
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Menus.ToListAsync());
+            return View(await _context.Orders.OrderByDescending(x => x.Id).ToListAsync());
         }
 
-        // GET: Admin/Menus/Details/5
+        // GET: Admin/Orders/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -30,39 +30,39 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var menu = await _context.Menus
+            var order = await _context.Orders
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (menu == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(menu);
+            return View(order);
         }
 
-        // GET: Admin/Menus/Create
+        // GET: Admin/Orders/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/Menus/Create
+        // POST: Admin/Orders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,MenuTitle,Link,Type")] Menu menu)
+        public async Task<IActionResult> Create([Bind("Id,UserId,FirstName,LastName,CompanyName,Country,Address,City,Email,Phone,Comment,CouponCode,CouponDiscount,Shipping,SubTotal,Total,CreateDate,TransId,Status")] Order order)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(menu);
+                _context.Add(order);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(menu);
+            return View(order);
         }
 
-        // GET: Admin/Menus/Edit/5
+        // GET: Admin/Orders/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -70,22 +70,24 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var menu = await _context.Menus.FindAsync(id);
-            if (menu == null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null)
             {
                 return NotFound();
             }
-            return View(menu);
+            ViewData["OrderDetails"] = _context.OrderDetails.Where(x => x.OrderId == id).ToList();
+            return View(order);
         }
 
-        // POST: Admin/Menus/Edit/5
+        // POST: Admin/Orders/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,MenuTitle,Link,Type")] Menu menu)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,FirstName,LastName,CompanyName,Country,Address,City,Email,Phone,Comment,CouponCode,CouponDiscount,Shipping,SubTotal,Total,CreateDate,TransId,Status")] Order order)
         {
-            if (id != menu.Id)
+            ViewData["OrderDetails"] = _context.OrderDetails.Where(x => x.OrderId == id).ToList();
+            if (id != order.Id)
             {
                 return NotFound();
             }
@@ -94,12 +96,12 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(menu);
+                    _context.Update(order);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MenuExists(menu.Id))
+                    if (!OrderExists(order.Id))
                     {
                         return NotFound();
                     }
@@ -110,10 +112,10 @@ namespace OnlineShop.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(menu);
+            return View(order);
         }
 
-        // GET: Admin/Menus/Delete/5
+        // GET: Admin/Orders/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -121,34 +123,35 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var menu = await _context.Menus
+            var order = await _context.Orders
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (menu == null)
+            if (order == null)
             {
                 return NotFound();
             }
 
-            return View(menu);
+            return View(order);
         }
 
-        // POST: Admin/Menus/Delete/5
+        // POST: Admin/Orders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var menu = await _context.Menus.FindAsync(id);
-            if (menu != null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                _context.Menus.Remove(menu);
+                _context.Orders.Remove(order);
             }
-
+            var orderDetails = _context.OrderDetails.Where(x => x.OrderId == id).ToList();
+            _context.OrderDetails.RemoveRange(orderDetails);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MenuExists(int id)
+        private bool OrderExists(int id)
         {
-            return _context.Menus.Any(e => e.Id == id);
+            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

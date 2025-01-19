@@ -49,6 +49,10 @@ public class CartController : Controller
         {
             return NotFound();
         }
+        if (product.Qty < request.Count)
+        {
+            return BadRequest();
+        }
         // Retrieve the list of products in the cart using the dedicated function
         var cartItems = GetCartItems();
 
@@ -371,6 +375,20 @@ public class CartController : Controller
             // Save the PayPal transaction ID and update order status
             order.TransId = executedPayment.transactions[0].related_resources[0].sale.id;
             order.Status = executedPayment.state.ToLower();
+            //---------Reduce QTY-------------
+            var orderDetails = _context.OrderDetails.Where(x => x.OrderId == orderId).ToList();
+
+            var productsIds = orderDetails.Select(x => x.ProductId);
+
+            var products = _context.Products.Where(x => productsIds.Contains(x.Id)).ToList();
+
+            foreach (var item in products)
+            {
+                item.Qty = item.Qty - orderDetails.FirstOrDefault(x => x.ProductId == item.Id).Count;
+            }
+
+            _context.Products.UpdateRange(products);
+            //---------------------------------
             _context.SaveChanges();
 
             ViewData["orderId"] = order.Id;
